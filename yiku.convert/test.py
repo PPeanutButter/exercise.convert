@@ -1,0 +1,12 @@
+import base64
+from flask import Flask
+
+app = Flask(__name__)
+app.run()
+
+s = "7jbn+NIk+hC5zePI+vLVURMy4c8ni9wTTyRKRfd+yGElGKGuEWofDweN+pNSzOS0ZiXZvmmWmD74uSQBe5VayGzPWDFnE9mBmEkbU5LO4WjT9saGEHMhz5ySZE5Jt7mCVIYdzQ+7t8JuOP9JOrIT/srxlBDSfDXYcFla5ZuPZnMfFFAk6xzxXnwOoESlXiE4dbyYaNHZ+jpRCwgFyXHZbPX538jn392Bk6VDUIFeRvHf3eJIHkNhvkRL5XaiZaJwk4Z2L8aAprYIANwm7oYxiXbOXNwBLPEoHVrD2vdCPfX26vieCfwhrwXpf8sM7dZBVHdMAX3jQDI7a6Yu/YlGGKg8S1gGblWAD8Afs9p3MdUiNMPDfec3fMi24bmnrMTAVKTng9IrbPSlftApfnctrq4xXVFvGxqFOyGJl0Hq/QkiHrR6lCDmtyqls1B09WtLqm7QPAQpxJC/wFKSpQLX21lQKuKsly2EJ7hvyV9q2SS/p5ItcWZBcJGWrNc+7AC0+V8LOrg82Qu1IlEZPkUcry6VboiKUwEUR9mw3ViMe9k2MuUq9PgbnusCRFDT8G5u0dqHWSBSNaZ/nQ/8jHO5fchmK9TWHI9AC1IWNkYwBoV3xtHEW5WMIqAzXoNYLdl+mYrIqhuT5zeAIeODdvg3kA=="
+
+@app.route('/updates/miotaV3.php')
+def hello_world():
+    return s
+

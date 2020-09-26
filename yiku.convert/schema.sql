@@ -1,0 +1,62 @@
+DROP TABLE IF EXISTS PD;
+DROP TABLE IF EXISTS DX;
+DROP TABLE IF EXISTS DD;
+DROP TABLE IF EXISTS TK;
+DROP TABLE IF EXISTS JD;
+DROP TABLE IF EXISTS img;
+DROP TABLE IF EXISTS Chapter;
+-- 判断题
+CREATE TABLE PD (
+  QID INTEGER PRIMARY KEY AUTOINCREMENT,
+  Topic TEXT NOT NULL,
+  OptionList TEXT,
+  Result TEXT,
+  Explain TEXT,
+  chapId tinyint
+);
+-- 单选题
+CREATE TABLE DX (
+  QID INTEGER PRIMARY KEY AUTOINCREMENT,
+  Topic TEXT NOT NULL,
+  OptionList TEXT,
+  Result TEXT,
+  Explain TEXT,
+  chapId tinyint
+);
+-- 多选题
+CREATE TABLE DD (
+  QID INTEGER PRIMARY KEY AUTOINCREMENT,
+  Topic TEXT NOT NULL,
+  OptionList TEXT,
+  Result TEXT,
+  Explain TEXT,
+  chapId tinyint
+);
+-- 填空题
+CREATE TABLE TK (
+  QID INTEGER PRIMARY KEY AUTOINCREMENT,
+  Topic TEXT NOT NULL,
+  OptionList TEXT,
+  Result TEXT,
+  Explain TEXT,
+  chapId tinyint
+);
+-- 简答题
+CREATE TABLE JD (
+  QID INTEGER PRIMARY KEY AUTOINCREMENT,
+  Topic TEXT NOT NULL,
+  OptionList TEXT,
+  Result TEXT,
+  Explain TEXT,
+  chapId tinyint
+);
+-- 图片
+CREATE TABLE img(
+  name TEXT PRIMARY KEY,
+  binary LONGBLOB
+);
+-- 章节名称
+CREATE TABLE Chapter(
+  chapId tinyint PRIMARY KEY,
+  name text
+)

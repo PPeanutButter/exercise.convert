@@ -1,0 +1,2 @@
+rootProject.name='jiakaobaodian-1'
+include ':app'
