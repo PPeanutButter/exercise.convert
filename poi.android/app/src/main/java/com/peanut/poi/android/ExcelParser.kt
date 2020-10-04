@@ -1,9 +1,10 @@
 package com.peanut.poi.android
 
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteException
 import android.os.Handler
 import android.util.Base64
-import com.peanut.sdk.database.DataBase
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.util.IOUtils
@@ -14,7 +15,7 @@ import java.util.*
 
 class ExcelParser {
 
-    fun run(context: Context, cmd: String, logger: MainActivity.Logger?): Boolean {
+    fun run(context: Context, cmd: String, logger: MainActivity.Logger?,func:(result:Boolean)->Unit){
         System.setProperty(
                 "org.apache.poi.javax.xml.stream.XMLInputFactory",
                 "com.fasterxml.aalto.stax.InputFactoryImpl"
@@ -27,7 +28,7 @@ class ExcelParser {
                 "org.apache.poi.javax.xml.stream.XMLEventFactory",
                 "com.fasterxml.aalto.stax.EventFactoryImpl"
         )
-        return readExcel(context, cmd, logger)
+        return func.invoke(readExcel(context, cmd, logger))
     }
 
     private fun getReadWorkBookType(context: Context, filePath: String, logger: MainActivity.Logger?): Workbook? {
@@ -43,6 +44,7 @@ class ExcelParser {
             val a = StringWriter()
             e.printStackTrace(PrintWriter(a))
             Handler(context.mainLooper).post { logger?.e(a.toString()) }
+            Handler(context.mainLooper).post { logger?.w("可能不是excel文件！") }
         } finally {
             IOUtils.closeQuietly(fileInputStream)
         }
@@ -92,19 +94,17 @@ class ExcelParser {
             Handler(context.mainLooper).post {
                 logger?.v("初始化指针ing")
             }
-            val temp = DataBase(context, db.toString(), null, 1, null)
-            temp.execSQL("create table PD(QID int PRIMARY KEY,Topic text,OptionList text,Result text,Explain text,chapId tinyint);")
-            temp.execSQL("create table DX(QID int PRIMARY KEY,Topic text,OptionList text,Result text,Explain text,chapId tinyint);")
-            temp.execSQL("create table DD(QID int PRIMARY KEY,Topic text,OptionList text,Result text,Explain text,chapId tinyint);")
-            temp.execSQL("create table TK(QID int PRIMARY KEY,Topic text,OptionList text,Explain text,chapId tinyint);")
-            temp.execSQL("create table JD(QID int PRIMARY KEY,Topic text,Explain text,chapId tinyint);")
-            if (sheet[0, 0].cellValue().l("topic") &&
-                    sheet[0, 1].cellValue().l("optionlist") &&
-                    sheet[0, 2].cellValue().l("result") &&
-                    sheet[0, 3].cellValue().l("explain") &&
-                    sheet[0, 4].cellValue().l("type") &&
-                    sheet[0, 5].cellValue().l("chapter")
-            ) {
+            val temp = DataBase(context, db.toString(), null, 1)
+            "a.sql".execAssetsSql(temp.sqLiteDatabase, context)
+            //check format
+            val a_a = arrayOf(sheet[0][0],sheet[0][1],sheet[0][2],sheet[0][3],sheet[0][4],sheet[0][5])
+            val a_b = arrayOf("Topic","OptionList","Result","Explain","Chapter")
+            if (null in a_a){
+                Handler(context.mainLooper).post {
+                    logger?.e("缺少${a_b[a_a.indexOf(null)]}字段")
+                }
+            }
+            if (sheet[0, 0].cellValue().l("topic") && sheet[0, 1].cellValue().l("optionlist") && sheet[0, 2].cellValue().l("result") && sheet[0, 3].cellValue().l("explain") && sheet[0, 4].cellValue().l("type") && sheet[0, 5].cellValue().l("chapter")) {
                 val indexes = intArrayOf(0, 0, 0, 0, 0)
                 var escape = 0
                 var chapList = emptyList<String>()
@@ -196,6 +196,22 @@ class ExcelParser {
                 sb.append(char)
         }
         return sb.toString()
+    }
+
+    fun String.execAssetsSql(db: SQLiteDatabase?, context: Context){
+        try {
+            val sqls = BufferedReader(InputStreamReader(context.resources.assets.open("schema/$this"))).readLines()
+            for (sql in sqls){
+                if (sql.startsWith("--")) continue
+                try {
+                    db?.execSQL(sql)
+                }catch (e: SQLiteException){
+                    e.printStackTrace()
+                }
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
     }
 
 }
